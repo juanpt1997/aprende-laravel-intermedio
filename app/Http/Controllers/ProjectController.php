@@ -36,6 +36,9 @@ class ProjectController extends Controller
 
     public function store(SaveProjectRequest $request)
     {
+        // return $request->file('image')->store('images'); // ? Por defecto se puede utilizar así pero pasa el de local en config/filesystems.php
+        // return $request->file('image')->store('images', 'local'); // ? Esto equivale a lo de arriba, podemos cambiar el disco por defecto desde .env
+        return $request->file('image')->store('images', 'public');
         Project::create( $request->validated() );
 
         return redirect()->route('projects.index')->with('status', 'El proyecto fue creado con éxito');
