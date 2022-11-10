@@ -28,6 +28,14 @@ class SaveProjectRequest extends FormRequest
         return [
             'title' => 'required',
             'url' => ['required', Rule::unique('projects')->ignore($this->route('project'))],
+            // 'image' => 'required|image', // jpeg, png, bmp, gif, svg o webp
+            'image' => [
+                        'required', 
+                        'mimes:jpeg,png',
+                        // 'dimensions:min_width=600,height=400'
+                        // 'dimensions:ratio=16/9'
+                        'max:2000'
+                        ],
             'description' => 'required',
         ];
     }
