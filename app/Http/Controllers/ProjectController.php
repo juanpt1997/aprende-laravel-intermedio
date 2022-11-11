@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Project;
 use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\SaveProjectRequest;
 
@@ -46,6 +47,13 @@ class ProjectController extends Controller
         $project->image = $request->file('image')->store('images', 'public');
         $project->save();
 
+        // Explicación en el método update
+        $img = Image::make(Storage::get('public/' . $project->image))
+            ->widen(600)
+            ->limitColors(255)
+            ->encode();
+        Storage::put('public/' . $project->image, (string) $img);
+
         return redirect()->route('projects.index')->with('status', 'El proyecto fue creado con éxito');
     }
 
@@ -68,6 +76,18 @@ class ProjectController extends Controller
             $project = $project->fill($request->validated());
             $project->image = $request->file('image')->store('images', 'public');
             $project->save();
+
+            // Optimizar la imagen que se ha guardado
+            // ? De esta forma estamos atados al disco local
+            // $img = Image::make(storage_path('app/public/' . $project->image));
+            $img = Image::make(Storage::get('public/' . $project->image))
+                ->widen(600)
+                ->limitColors(255)
+                ->encode();
+            // Es posible recortar
+            // Limitar colores...haciendo pruebas me da que pesa más
+            // $img->widen(600)->limitColors(255)->encode();
+            Storage::put('public/' . $project->image, (string) $img);
         } else {
             $project->update(array_filter($request->validated()));
         }
@@ -78,7 +98,7 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         Storage::delete('public/' . $project->image);
-        
+
         $project->delete();
 
         return redirect()->route('projects.index')->with('status', 'El proyecto fue eliminado con éxito.');
