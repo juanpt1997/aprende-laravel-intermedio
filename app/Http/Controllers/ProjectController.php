@@ -57,7 +57,16 @@ class ProjectController extends Controller
 
     public function update(Project $project, SaveProjectRequest $request)
     {
-        $project->update( $request->validated() );
+        // ? Con array_filter eliminamos el campo imagen del arreglo en caso de venir nulo
+        //dd(array_filter($request->validated()));
+
+        if ($request->hasFile('image')) {
+            $project = $project->fill($request->validated());
+            $project->image = $request->file('image')->store('images', 'public');
+            $project->save();
+        } else {
+            $project->update(array_filter($request->validated()));
+        }
 
         return redirect()->route('projects.show', $project)->with('status', 'El proyecto fue actualizado con éxito.');
     }

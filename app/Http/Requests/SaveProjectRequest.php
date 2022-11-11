@@ -24,13 +24,18 @@ class SaveProjectRequest extends FormRequest
      */
     public function rules()
     {
+
+        // ? Queremos editar el proyecto sin que sea obligatoria la imagen
+        // if ($this->getMethod() == "POST"){
+        //     // Podríamos retornar según el método
+        // }
         
         return [
             'title' => 'required',
             'url' => ['required', Rule::unique('projects')->ignore($this->route('project'))],
             // 'image' => 'required|image', // jpeg, png, bmp, gif, svg o webp
             'image' => [
-                        'required', 
+                        $this->route('project') ? 'nullable' : 'required', 
                         'mimes:jpeg,png',
                         // 'dimensions:min_width=600,height=400'
                         // 'dimensions:ratio=16/9'
