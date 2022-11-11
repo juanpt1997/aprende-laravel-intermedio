@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\SaveProjectRequest;
 
 class ProjectController extends Controller
@@ -61,6 +62,9 @@ class ProjectController extends Controller
         //dd(array_filter($request->validated()));
 
         if ($request->hasFile('image')) {
+            // Elimino la imagen anterior, debo pasarle la ruta, recordar que el disco no es local si no public
+            Storage::delete('public/' . $project->image);
+            // Guardo
             $project = $project->fill($request->validated());
             $project->image = $request->file('image')->store('images', 'public');
             $project->save();
@@ -73,6 +77,8 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        Storage::delete('public/' . $project->image);
+        
         $project->delete();
 
         return redirect()->route('projects.index')->with('status', 'El proyecto fue eliminado con éxito.');
