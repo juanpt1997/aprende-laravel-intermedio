@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Project;
+use App\Events\ProjectSaved;
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\SaveProjectRequest;
 
@@ -47,12 +47,9 @@ class ProjectController extends Controller
         $project->image = $request->file('image')->store('images', 'public');
         $project->save();
 
-        // Explicación en el método update
-        $img = Image::make(Storage::get('public/' . $project->image))
-            ->widen(600)
-            ->limitColors(255)
-            ->encode();
-        Storage::put('public/' . $project->image, (string) $img);
+        // Optimizar la imagen que se ha guardado
+        // $this->optimizeImage($project); // ? esto no lo utilizaremos así debido a que creamos event y listener
+        ProjectSaved::dispatch($project);
 
         return redirect()->route('projects.index')->with('status', 'El proyecto fue creado con éxito');
     }
@@ -78,16 +75,8 @@ class ProjectController extends Controller
             $project->save();
 
             // Optimizar la imagen que se ha guardado
-            // ? De esta forma estamos atados al disco local
-            // $img = Image::make(storage_path('app/public/' . $project->image));
-            $img = Image::make(Storage::get('public/' . $project->image))
-                ->widen(600)
-                ->limitColors(255)
-                ->encode();
-            // Es posible recortar
-            // Limitar colores...haciendo pruebas me da que pesa más
-            // $img->widen(600)->limitColors(255)->encode();
-            Storage::put('public/' . $project->image, (string) $img);
+            // $this->optimizeImage($project); // ? esto no lo utilizaremos así debido a que creamos event y listener
+            ProjectSaved::dispatch($project);
         } else {
             $project->update(array_filter($request->validated()));
         }
@@ -103,4 +92,10 @@ class ProjectController extends Controller
 
         return redirect()->route('projects.index')->with('status', 'El proyecto fue eliminado con éxito.');
     }
+
+    // ? Optimizar la imagen que se ha guardado, esto no lo utilizaremos así debido a que creamos event y listener
+    // protected function optimizeImage($project)
+    // {
+        
+    // }
 }
