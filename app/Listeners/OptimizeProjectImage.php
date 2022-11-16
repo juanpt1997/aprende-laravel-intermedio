@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ProjectSaved;
+use Exception;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\InteractsWithQueue;
@@ -28,6 +29,7 @@ class OptimizeProjectImage implements ShouldQueue
      */
     public function handle(ProjectSaved $event)
     {
+        // throw new Exception("error optimizing image");
         // ? De esta forma estamos atados al disco local
         // $img = Image::make(storage_path('app/public/' . $project->image));
         $img = Image::make(Storage::get('public/' . $event->project->image))
