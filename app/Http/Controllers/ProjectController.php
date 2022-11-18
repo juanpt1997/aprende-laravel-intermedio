@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Project;
 use App\Events\ProjectSaved;
 use Illuminate\Http\Request;
@@ -31,8 +32,10 @@ class ProjectController extends Controller
 
     public function create()
     {
+        $categories = Category::pluck('name', 'id');
         return view('projects.create', [
-            'project' => new Project
+            'project' => new Project,
+            'categories' => $categories
         ]);
     }
 
@@ -56,8 +59,10 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
+        $categories = Category::pluck('name', 'id');
         return view('projects.edit', [
-            'project' => $project
+            'project' => $project,
+            'categories' => $categories
         ]);
     }
 
@@ -96,6 +101,6 @@ class ProjectController extends Controller
     // ? Optimizar la imagen que se ha guardado, esto no lo utilizaremos así debido a que creamos event y listener
     // protected function optimizeImage($project)
     // {
-        
+
     // }
 }
