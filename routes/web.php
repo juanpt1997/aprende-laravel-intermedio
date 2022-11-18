@@ -1,5 +1,11 @@
 <?php
 
+// ? Visualizamos las consultas para solucionar posteriormente el problema de N + 1 (por cada proyecto realizo la consulta de la categoría)
+// DB::listen(function($query) {
+//     var_dump($query->sql);
+// });
+// ? También podemos utilizar el paquete laravel-debugbar
+
 Route::view('/', 'home')->name('home');
 Route::view('/quienes-somos', 'about')->name('about');
 

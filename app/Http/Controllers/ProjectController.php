@@ -18,8 +18,9 @@ class ProjectController extends Controller
 
     public function index()
     {
+        // ? Con ese with('category') We solve problem N + 1, for each project I won't need to get category from DB
         return view('projects.index', [
-            'projects' => Project::latest()->paginate()
+            'projects' => Project::with('category')->latest()->paginate()
         ]);
     }
 
