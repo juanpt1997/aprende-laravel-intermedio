@@ -12,7 +12,7 @@
                 <div class="bg-white p-5 shadow rounded">
                     <h1 class="mb-0">{{ $project->title }}</h1>
                     @if ($project->category_id)
-                        <a href="{{ route('categories.show', $project->category_id) }}"
+                        <a href="{{ route('categories.show', $project->category) }}"
                             class="badge badge-secondary mb-1">{{ $project->category->name }}</a>
                     @endif
                     <p class="text-secondary">
