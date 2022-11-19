@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
+
      // Podemos pre cargar una consulta así:
     // $category = Category::with('projects')->first();
     // Esto me trae el project incluida los projects para evitar tantas consultas
