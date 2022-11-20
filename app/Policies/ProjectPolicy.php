@@ -10,6 +10,14 @@ class ProjectPolicy
 {
     use HandlesAuthorization;
 
+    public function before($user, $ability)
+    {
+        // We can't return false here because the other methods won't run
+        if ($user->role === "superadmin"){
+            return true;
+        }
+    }
+
     /**
      * Determine whether the user can view any projects.
      *
