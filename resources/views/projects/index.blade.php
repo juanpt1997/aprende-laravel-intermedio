@@ -13,9 +13,9 @@
             @else
                 <h1 class="display-4 mb-0">@lang('Projects')</h1>
             @endisset
-            @auth
+            @can('create-projects')
                 <a class="btn btn-primary" href="{{ route('projects.create') }}">Crear proyecto</a>
-            @endauth
+            @endcan
         </div>
         <p class="lead text-secondary">Proyectos realizados Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
 

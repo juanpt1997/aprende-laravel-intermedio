@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Category;
 use App\Project;
+use App\Category;
 use App\Events\ProjectSaved;
 use Illuminate\Http\Request;
+// use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\SaveProjectRequest;
 
@@ -33,6 +34,19 @@ class ProjectController extends Controller
 
     public function create()
     {
+        // ? Both do the same but code below is better
+        // if (Gate::allows('create-projects')){
+        //     $categories = Category::pluck('name', 'id');
+        //     return view('projects.create', [
+        //         'project' => new Project,
+        //         'categories' => $categories
+        //     ]);
+        // }
+        // abort(403);
+
+        // abort_unless(Gate::allows('create-projects'), 403);
+        // Gate::authorize('create-projects');
+        $this->authorize('create-projects');
         $categories = Category::pluck('name', 'id');
         return view('projects.create', [
             'project' => new Project,
