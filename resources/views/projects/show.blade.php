@@ -31,12 +31,12 @@
                                     <a class="btn btn-primary" href="{{ route('projects.edit', $project) }}">Editar</a>
                                 @endcan
                                 @can('delete', $project)
-                                    <a class="btn btn-danger" href="#"
-                                        onclick="document.getElementById('delete-project').submit()">Eliminar</a>
                                     <form id="delete-project" class="d-none" method="POST"
                                         action="{{ route('projects.destroy', $project) }}">
                                         @csrf @method('DELETE')
                                     </form>
+                                    <a class="btn btn-danger" href="#"
+                                        onclick="document.getElementById('delete-project').submit()">Eliminar</a>
                                 @endcan
                             </div>
                         @endauth

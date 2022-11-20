@@ -22,7 +22,8 @@ class ProjectController extends Controller
         // ? Con ese with('category') We solve problem N + 1, for each project I won't need to get category from DB
         return view('projects.index', [
             'newProject' => new Project,
-            'projects' => Project::with('category')->latest()->paginate()
+            'projects' => Project::with('category')->latest()->paginate(),
+            'deletedProjects' => Project::onlyTrashed()->get()
         ]);
     }
 
@@ -110,16 +111,46 @@ class ProjectController extends Controller
         return redirect()->route('projects.show', $project)->with('status', 'El proyecto fue actualizado con éxito.');
     }
 
+
     public function destroy(Project $project)
     {
         $this->authorize('delete', $project);
 
-        Storage::delete('public/' . $project->image);
+        // Storage::delete('public/' . $project->image); // ? This was commented because there is the possibility that a user may want to restore a soft deleted project
 
         $project->delete();
 
         return redirect()->route('projects.index')->with('status', 'El proyecto fue eliminado con éxito.');
     }
+
+
+    // ? We can't use route model binding if the projects are 'deleted'
+    // public function restore(Project $project)
+    public function restore($projectUrl)
+    {
+        $project = Project::withTrashed()->whereUrl($projectUrl)->firstOrFail();
+
+        $this->authorize('restore', $project);
+
+        $project->restore();
+
+        return redirect()->route('projects.index')->with('status', 'El proyecto fue restaurado con éxito.');
+    }
+
+    // public function forceDelete(Project $project)
+    public function forceDelete($projectUrl)
+    {
+        $project = Project::withTrashed()->whereUrl($projectUrl)->firstOrFail();
+
+        $this->authorize('force-delete', $project); // ? Camel case and kebab case are both accepted event if the method's name is forceDelete
+
+        Storage::delete('public/' . $project->image);
+
+        $project->forceDelete();
+
+        return redirect()->route('projects.index')->with('status', 'El proyecto fue eliminado permanentemente.');
+    }
+
 
     // ? Optimizar la imagen que se ha guardado, esto no lo utilizaremos así debido a que creamos event y listener
     // protected function optimizeImage($project)

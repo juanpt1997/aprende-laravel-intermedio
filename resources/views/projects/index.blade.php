@@ -13,8 +13,9 @@
             @else
                 <h1 class="display-4 mb-0">@lang('Projects')</h1>
             @endisset
-            {{-- @can('create', new App\Project) --}}
-            @can('create', $newProject) {{-- I returned this from the controller: 'newProject' => new Project, --}}
+            {{-- @can('create', new App\Project()) --}}
+            @can('create', $newProject)
+                {{-- I returned this from the controller: 'newProject' => new Project, --}}
                 <a class="btn btn-primary" href="{{ route('projects.create') }}">Crear proyecto</a>
             @endcan
         </div>
@@ -55,5 +56,33 @@
         <div class="mt-4">
             {{ $projects->links() }}
         </div>
+
+        @can('view-deleted-projects')
+            <h4>Papelera</h4>
+            <ul class="list-group">
+                @foreach ($deletedProjects as $deletedProject)
+                    <li class="list-group-item">
+                        {{ $deletedProject->title }}
+                        @can('restore', $deletedProject)
+                            <form method="POST" action="{{ route('projects.restore', $deletedProject) }}" class="d-inline">
+                                @csrf
+                                @method('PATCH')
+                                <button class="btn btn-sm btn-info">Restaurar</button>
+                            </form>
+                        @endcan
+                        {{-- @can('forceDelete', $deletedProject) --}} {{-- ? Camel case and kebab case are both accepted event if the method's name is forceDelete --}}
+                        @can('force-delete', $deletedProject)
+                            <form 
+                                onsubmit="return confirm('Esta acción no se puede deshacer, ¿Estás seguro de querer eliminar este proyecto?')"
+                                action="{{ route('projects.forceDelete', $deletedProject) }}" method="post" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-danger">Eliminar permanentemente</button>
+                            </form>
+                        @endcan
+                    </li>
+                @endforeach
+            </ul>
+        @endcan
     </div>
 @endsection
