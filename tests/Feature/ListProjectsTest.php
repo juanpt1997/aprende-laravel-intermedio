@@ -20,8 +20,6 @@ class ListProjectsTest extends TestCase
     {
         $this->withExceptionHandling(); // See complete errors
 
-
-
         // Setup
         // Creo un proyecto
         $project = factory(Project::class)->create();
