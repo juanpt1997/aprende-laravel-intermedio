@@ -15,7 +15,8 @@ class SaveProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::allows('create-projects');
+        // return Gate::allows('create-projects');
+        return Gate::authorize('create', new \App\Project);
     }
 
     /**

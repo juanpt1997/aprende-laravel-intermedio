@@ -21,6 +21,7 @@ class ProjectController extends Controller
     {
         // ? Con ese with('category') We solve problem N + 1, for each project I won't need to get category from DB
         return view('projects.index', [
+            'newProject' => new Project,
             'projects' => Project::with('category')->latest()->paginate()
         ]);
     }
@@ -46,10 +47,11 @@ class ProjectController extends Controller
 
         // abort_unless(Gate::allows('create-projects'), 403);
         // Gate::authorize('create-projects');
-        $this->authorize('create-projects');
+        // $this->authorize('create-projects');
+        $this->authorize('create', $project = new Project);
         $categories = Category::pluck('name', 'id');
         return view('projects.create', [
-            'project' => new Project,
+            'project' => $project,
             'categories' => $categories
         ]);
     }
@@ -62,6 +64,7 @@ class ProjectController extends Controller
         // Project::create( $request->validated() ); // ? No lo usaremos así porque lo vamos a optimizar así:
 
         $project = new Project($request->validated());
+        // $this->authorize('create', $project);
         $project->image = $request->file('image')->store('images', 'public');
         $project->save();
 
@@ -74,6 +77,7 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
+        $this->authorize('update', $project);
         $categories = Category::pluck('name', 'id');
         return view('projects.edit', [
             'project' => $project,
@@ -83,6 +87,8 @@ class ProjectController extends Controller
 
     public function update(Project $project, SaveProjectRequest $request)
     {
+        $this->authorize('update', $project);
+
         // ? Con array_filter eliminamos el campo imagen del arreglo en caso de venir nulo
         //dd(array_filter($request->validated()));
 
@@ -106,6 +112,8 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        $this->authorize('delete', $project);
+
         Storage::delete('public/' . $project->image);
 
         $project->delete();

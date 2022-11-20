@@ -13,7 +13,8 @@
             @else
                 <h1 class="display-4 mb-0">@lang('Projects')</h1>
             @endisset
-            @can('create-projects')
+            {{-- @can('create', new App\Project) --}}
+            @can('create', $newProject) {{-- I returned this from the controller: 'newProject' => new Project, --}}
                 <a class="btn btn-primary" href="{{ route('projects.create') }}">Crear proyecto</a>
             @endcan
         </div>
